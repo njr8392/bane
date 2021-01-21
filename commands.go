@@ -42,11 +42,15 @@ func Database(f Frame, db *pgx.Conn) {
 
 	if *database {
 		colnames := f.SqlTable()
+		fmt.Printf("Columns create: %s\n\n", colnames)
+
 		err := CreateTable(*table, colnames)
 		fmt.Printf("Table %s created\n", *table)
+
 		if err != nil {
 			fmt.Println(err)
 		}
+
 		err = InsertData(f)
 		if err != nil {
 			fmt.Println(err)

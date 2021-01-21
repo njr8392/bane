@@ -56,9 +56,8 @@ func InsertData(frame Frame) error {
 	return nil
 }
 
-//write function to query the table command needs to read from stdin and output new data until the user is satisfied
-//command for to write that output to a file then close????
-//yes, key press for the program to exit and delete the table
+//function to query the table command needs to read from stdin and output new data until the user is satisfied
+//press "q" and ENTER for the program to exit, table will be automatically deleted upon exit
 func Select() {
 	//need to abide by query formula. query will have place holders and values will be enter seperatly
 	var rows pgx.Rows
@@ -68,24 +67,29 @@ func Select() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter a query or press q to quit: ")
 
-		//query needs to be entered in the same format as you would writing code
-		//select * from tmp where name = $1, pam
-		//need to use a comma to seperate query and arguments
 		input, err := reader.ReadBytes('\n')
 		if err != nil {
 			fmt.Println(err)
 		}
-		if input[0] == 'q' && len(input) == 2 { //byte len is two because it contains the newline character
+
+		//byte len is two because it contains the newline character
+		if input[0] == 'q' && len(input) == 2 { 
 			return
 		}
+
+		//need to trim the deliminator from the input or else the queries will not match
+		input = input[:len(input)-1] 
 		query := bytes.Split(input, []byte(","))
 		//if more than 2 values add to args
 
+		//query needs to be entered in the same format as you would writing code
+		//select * from tmp where name = $1, pam
+		//need to use a comma to seperate query and arguments
 		if len(query) > 1 {
 			for i := 1; i < len(query); i++ {
-				vals = append(vals, string(query[i])) // ints?
+				vals = append(vals, string(query[i])) // works queries work on ints as well
 			}
-			rows, er = Dbase.Query(context.Background(), string(query[0]), vals...) // why isn't this working? a basic select statement works.
+			rows, er = Dbase.Query(context.Background(), string(query[0]), vals...) 
 
 		} else {
 			rows, er = Dbase.Query(context.Background(), string(query[0]))
@@ -96,6 +100,9 @@ func Select() {
 		}
 
 		for rows.Next() {
+			//rows.Vaules() are an array of {}interface, need to give user the option to write these to csv and exit
+			//csv writer takes an []string
+
 			row, err := rows.Values()
 			if err != nil {
 				fmt.Println(err)
@@ -105,12 +112,9 @@ func Select() {
 
 		}
 		rows.Close()
-		//should be able to convert the results of the query back to a csv:
 	}
 }
 
-//make it so this will get call when program exits
-//only want the table to tempory
 func DeleteTable() error {
 	del := fmt.Sprintf("DROP TABLE %s;", *table)
 	_, err := Dbase.Exec(context.Background(), del)

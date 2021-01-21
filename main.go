@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// handles headers and column flags
+	// handles headers and column flags in commands file.  Should seperate each file into a package then merge into main
 	Run(f)
 
 	//./bane -db=true -t=person *csv.  will make a tempory sql table that you can query

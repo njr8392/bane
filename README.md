@@ -17,8 +17,8 @@ I have 3 goals for this project
 		generate a Create table statement automatically but it currently only supports strings and integers, however a lot of
 		the time that is all you need.  As a work around you currently have to write queries to fit the SQL ie seperating
 		the queries and values.  I would like to eventually move away from this as I don't care about risk of database 
-		injections because this is intended to run locally.  I may have to write my own driver for this but I will do more 
-		research.
+		injections because this is intended to run locally and the table is deleted when the program exits.  
+		I may have to write my own driver for this but I will do more research.
 
 Cut with ./bane -c 2,3,4 (columns of choice) *.csv
 
